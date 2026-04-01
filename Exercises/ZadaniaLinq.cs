@@ -167,10 +167,14 @@ public sealed class ZadaniaLinq
     /// FROM Zapisy
     /// ORDER BY DataZapisu DESC;
     /// </summary>
-    public IEnumerable<string> Zadanie09_TrzyNajnowszeZapisy()
-    {
-        //var tmp = DaneUczelni.
-        throw Niezaimplementowano(nameof(Zadanie09_TrzyNajnowszeZapisy));
+    public IEnumerable<string> Zadanie09_TrzyNajnowszeZapisy() {
+        var tmp = DaneUczelni.Zapisy
+            .OrderBy(s => s.DataZapisu)
+            .Take(3)
+            .Select(s => $"{s.DataZapisu}, {s.Id}, {s.PrzedmiotId}")
+            .OrderByDescending(s => s);
+        //throw Niezaimplementowano(nameof(Zadanie09_TrzyNajnowszeZapisy));
+        return  tmp;
     }
 
     /// <summary>
@@ -184,9 +188,14 @@ public sealed class ZadaniaLinq
     /// ORDER BY Nazwa
     /// OFFSET 2 ROWS FETCH NEXT 2 ROWS ONLY;
     /// </summary>
-    public IEnumerable<string> Zadanie10_DrugaStronaPrzedmiotow()
-    {
-        throw Niezaimplementowano(nameof(Zadanie10_DrugaStronaPrzedmiotow));
+    public IEnumerable<string> Zadanie10_DrugaStronaPrzedmiotow() {
+        var tmp = DaneUczelni.Przedmioty
+            .OrderBy(s => s.Nazwa)
+            .Skip(2)
+            .Take(2)
+            .Select(s => $"{s.Nazwa} {s.Kategoria}");
+        //throw Niezaimplementowano(nameof(Zadanie10_DrugaStronaPrzedmiotow));
+        return tmp;
     }
 
     /// <summary>
@@ -199,9 +208,11 @@ public sealed class ZadaniaLinq
     /// FROM Studenci s
     /// JOIN Zapisy z ON s.Id = z.StudentId;
     /// </summary>
-    public IEnumerable<string> Zadanie11_PolaczStudentowIZapisy()
-    {
-        throw Niezaimplementowano(nameof(Zadanie11_PolaczStudentowIZapisy));
+    public IEnumerable<string> Zadanie11_PolaczStudentowIZapisy() {
+        var tmp = DaneUczelni.Studenci
+            .Join(DaneUczelni.Zapisy, s => s.Id, z => z.StudentId, (s, z) => $"{s.Imie} {s.Nazwisko}, {z.DataZapisu}");
+        //throw Niezaimplementowano(nameof(Zadanie11_PolaczStudentowIZapisy));
+        return tmp;
     }
 
     /// <summary>
