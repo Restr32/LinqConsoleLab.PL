@@ -298,9 +298,16 @@ public sealed class ZadaniaLinq
     /// LEFT JOIN Przedmioty p ON p.ProwadzacyId = pr.Id
     /// GROUP BY pr.Imie, pr.Nazwisko;
     /// </summary>
-    public IEnumerable<string> Zadanie15_ProwadzacyILiczbaPrzedmiotow()
-    {
-        throw Niezaimplementowano(nameof(Zadanie15_ProwadzacyILiczbaPrzedmiotow));
+    public IEnumerable<string> Zadanie15_ProwadzacyILiczbaPrzedmiotow() {
+        var tmp = DaneUczelni.Prowadzacy
+            .Select(t => new
+            {
+                numb = $"{t.Imie} {t.Nazwisko}",
+                val = DaneUczelni.Przedmioty.Count(p => p.ProwadzacyId == t.Id)
+            })
+            .Select(t => $"{t.numb}:\t{t.val}");
+        //throw Niezaimplementowano(nameof(Zadanie15_ProwadzacyILiczbaPrzedmiotow));
+        return tmp;
     }
 
     /// <summary>
@@ -315,9 +322,18 @@ public sealed class ZadaniaLinq
     /// WHERE z.OcenaKoncowa IS NOT NULL
     /// GROUP BY s.Imie, s.Nazwisko;
     /// </summary>
-    public IEnumerable<string> Zadanie16_NajwyzszaOcenaKazdegoStudenta()
-    {
-        throw Niezaimplementowano(nameof(Zadanie16_NajwyzszaOcenaKazdegoStudenta));
+    public IEnumerable<string> Zadanie16_NajwyzszaOcenaKazdegoStudenta() {
+        var tmp = DaneUczelni.Zapisy
+            .Where(t => t.OcenaKoncowa.HasValue)
+            .Join(DaneUczelni.Studenci,
+                s => s.StudentId,
+                z => z.Id,
+                (z, s) => new { s.Imie, s.Nazwisko, z.OcenaKoncowa })
+            .GroupBy(s => new { s.Imie, s.Nazwisko })
+            .Select(t => $"{t.Key.Imie} {t.Key.Nazwisko}:\t{t.
+                Max(x => x.OcenaKoncowa)}");
+        //throw Niezaimplementowano(nameof(Zadanie16_NajwyzszaOcenaKazdegoStudenta));
+        return tmp;
     }
 
     /// <summary>
@@ -333,9 +349,22 @@ public sealed class ZadaniaLinq
     /// GROUP BY s.Imie, s.Nazwisko
     /// HAVING COUNT(*) > 1;
     /// </summary>
-    public IEnumerable<string> Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem()
-    {
-        throw Niezaimplementowano(nameof(Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem));
+    public IEnumerable<string> Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem() {
+        var tmp = DaneUczelni.Zapisy
+            .Where(z => z.CzyAktywny)
+            .Join(DaneUczelni.Studenci,
+                s => s.StudentId,
+                z => z.Id,
+                (z, s) => new { s.Imie, s.Nazwisko, z.OcenaKoncowa })
+            .GroupBy(z => new { z.Imie, z.Nazwisko })
+            .Where(t => t.Count() > 1)
+            .Select(v =>
+            {
+                var s = DaneUczelni.Studenci.First(st => st.Imie.Equals(v.Key.Imie) && st.Nazwisko.Equals(v.Key.Nazwisko));
+                return $"{s.Imie} {s.Nazwisko}:\t{v.Count()}";
+            });
+        //throw Niezaimplementowano(nameof(Wyzwanie01_StudenciZWiecejNizJednymAktywnymPrzedmiotem));
+        return tmp;
     }
 
     /// <summary>
