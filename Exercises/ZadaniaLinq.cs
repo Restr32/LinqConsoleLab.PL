@@ -1,4 +1,5 @@
 using LinqConsoleLab.PL.Data;
+using LinqConsoleLab.PL.Models;
 
 namespace LinqConsoleLab.PL.Exercises;
 
@@ -228,7 +229,15 @@ public sealed class ZadaniaLinq
     /// </summary>
     public IEnumerable<string> Zadanie12_ParyStudentPrzedmiot()
     {
-        throw Niezaimplementowano(nameof(Zadanie12_ParyStudentPrzedmiot));
+        //throw Niezaimplementowano(nameof(Zadanie12_ParyStudentPrzedmiot));
+        var tmp = DaneUczelni.Zapisy
+            .Select(z => new
+            {
+                Student = DaneUczelni.Studenci.First(s => s.Id == z.StudentId),
+                Przedmiot = DaneUczelni.Przedmioty.First(p => p.Id == z.PrzedmiotId)
+            })
+            .Select(x => $"{x.Student.Imie} {x.Student.Nazwisko}\t{x.Przedmiot.Nazwa}");
+        return tmp;
     }
 
     /// <summary>
@@ -241,9 +250,16 @@ public sealed class ZadaniaLinq
     /// JOIN Przedmioty p ON p.Id = z.PrzedmiotId
     /// GROUP BY p.Nazwa;
     /// </summary>
-    public IEnumerable<string> Zadanie13_GrupowanieZapisowWedlugPrzedmiotu()
-    {
-        throw Niezaimplementowano(nameof(Zadanie13_GrupowanieZapisowWedlugPrzedmiotu));
+    public IEnumerable<string> Zadanie13_GrupowanieZapisowWedlugPrzedmiotu() {
+        var tmp = DaneUczelni.Zapisy
+            .GroupBy(z => z.PrzedmiotId)
+            .Select(g =>
+            {
+                var nazwa = DaneUczelni.Przedmioty.First(p => p.Id == g.Key).Nazwa;
+                return $"{nazwa}: {g.Count()}";
+            });
+        //throw Niezaimplementowano(nameof(Zadanie13_GrupowanieZapisowWedlugPrzedmiotu));
+        return tmp;
     }
 
     /// <summary>
@@ -258,9 +274,17 @@ public sealed class ZadaniaLinq
     /// WHERE z.OcenaKoncowa IS NOT NULL
     /// GROUP BY p.Nazwa;
     /// </summary>
-    public IEnumerable<string> Zadanie14_SredniaOcenaNaPrzedmiot()
-    {
-        throw Niezaimplementowano(nameof(Zadanie14_SredniaOcenaNaPrzedmiot));
+    public IEnumerable<string> Zadanie14_SredniaOcenaNaPrzedmiot() {
+        var tmp = DaneUczelni.Zapisy
+            .Where(t => t.OcenaKoncowa.HasValue)
+            .GroupBy(t => t.PrzedmiotId)
+            .Select(t =>
+            {
+                var numb = DaneUczelni.Przedmioty.First(y => y.Id == t.Key).Nazwa;
+                return $"{numb}: {t.Average(u => u.OcenaKoncowa)}";
+            });
+        //throw Niezaimplementowano(nameof(Zadanie14_SredniaOcenaNaPrzedmiot));
+        return tmp;
     }
 
     /// <summary>
